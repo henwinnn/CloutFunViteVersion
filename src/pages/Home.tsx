@@ -1,30 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { placeholderTokens } from "@/lib/placeholder-data";
 import { Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
+// import { placeholderTokens } from "../lib/placeholder-data";
 
 export default function HomePage() {
-  const [filter, setFilter] = useState<"top" | "new" | "trending">("trending");
+  // const [filter, setFilter] = useState<"top" | "new" | "trending">("trending");
 
-  const filteredTokens = placeholderTokens.filter(
-    (token) => token.category === filter
-  );
+  // const filteredTokens = placeholderTokens.filter(
+  //   (token) => token.category === filter
+  // );
 
   // Confetti effect (conceptual)
-  const triggerConfetti = () => {
-    // In a real app, you'd use a library like react-confetti
-    // For now, we can simulate with a console log or a simple CSS animation
-    const confettiElements = document.querySelectorAll(".confetti-piece");
-    confettiElements.forEach((el) => {
-      el.classList.add("animate-confetti-burst");
-      setTimeout(() => el.classList.remove("animate-confetti-burst"), 800);
-    });
-    console.log("🎉 Confetti Burst! 🎉");
-  };
+  // const triggerConfetti = () => {
+  //   // In a real app, you'd use a library like react-confetti
+  //   // For now, we can simulate with a console log or a simple CSS animation
+  //   const confettiElements = document.querySelectorAll(".confetti-piece");
+  //   confettiElements.forEach((el) => {
+  //     el.classList.add("animate-confetti-burst");
+  //     setTimeout(() => el.classList.remove("animate-confetti-burst"), 800);
+  //   });
+  //   console.log("🎉 Confetti Burst! 🎉");
+  // };
 
   return (
     <div className="flex flex-col items-center">

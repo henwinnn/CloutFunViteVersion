@@ -6,12 +6,12 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+} from "./ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Badge } from "./ui/badge";
 import { ArrowUpRight, ArrowDownRight, TrendingUp } from "lucide-react";
-import type { CreatorToken } from "@/lib/placeholder-data";
-import { cn } from "@/lib/utils";
+import type { CreatorToken } from "../../lib/placeholder-data";
+import { cn } from "../../lib/utils";
 
 interface CreatorTokenCardProps {
   token: CreatorToken;
@@ -62,7 +62,7 @@ export function CreatorTokenCard({ token }: CreatorTokenCardProps) {
         <CardFooter className="p-4 pt-0">
           {token.milestones && token.milestones.length > 0 && (
             <div className="flex flex-wrap gap-1">
-              {token.milestones.slice(0, 2).map((milestone) => (
+              {token.milestones.slice(0, 2).map((milestone: string) => (
                 <Badge
                   key={milestone}
                   variant="secondary"
