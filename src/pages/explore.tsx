@@ -27,7 +27,7 @@ import { Card, CardContent } from "./components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar";
 import { Link } from "react-router-dom";
 
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
 import { Tabs, TabsList, TabsTrigger } from "./components/ui/tabs";
 
 type SortOption = "price" | "marketCap" | "volume" | "holders" | "priceChange";
@@ -827,7 +827,7 @@ function EnhancedTokenCard({ token }: { token: any }) {
 
           {token.milestones && token.milestones.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-1">
-              {token.milestones.slice(0, 2).map((milestone) => (
+              {token.milestones.slice(0, 2).map((milestone: any) => (
                 <Badge
                   key={milestone}
                   variant="secondary"
