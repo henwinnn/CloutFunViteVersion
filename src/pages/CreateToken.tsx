@@ -26,6 +26,8 @@ import {
 // import { useToast } from "../hooks/use-toast;
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../hooks/use-toast";
+import { useWriteCreateToken } from "../hooks/useCreateToken";
+import { useAccount } from "wagmi";
 
 interface SocialLink {
   id: string;
@@ -49,6 +51,8 @@ export default function CreateTokenPage() {
     initialSocialLink,
   ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { CreateToken, error } = useWriteCreateToken();
+  const { address } = useAccount();
 
   const { toast } = useToast();
   const router = useNavigate();
@@ -65,31 +69,9 @@ export default function CreateTokenPage() {
     }
   };
 
-  const addSocialLink = () => {
-    setSocialLinks([
-      ...socialLinks,
-      { id: Date.now().toString(), platform: "twitter", url: "" },
-    ]);
-  };
-
-  const updateSocialLink = (
-    id: string,
-    field: keyof SocialLink,
-    value: string
-  ) => {
-    setSocialLinks(
-      socialLinks.map((link) =>
-        link.id === id ? { ...link, [field]: value } : link
-      )
-    );
-  };
-
-  const removeSocialLink = (id: string) => {
-    setSocialLinks(socialLinks.filter((link) => link.id !== id));
-  };
-
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    if (!address) return;
     setIsSubmitting(true);
 
     // Basic Validation
@@ -122,6 +104,16 @@ export default function CreateTokenPage() {
       imageFile,
       socialLinks,
     });
+
+    await CreateToken(
+      tokenName,
+      tokenTicker,
+      description
+      // BigInt(1000000000000000000000000),
+      // BigInt(500000000000000000000000),
+      // BigInt(10000000000000000),
+      // address
+    );
 
     await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate network delay
 
@@ -260,7 +252,7 @@ export default function CreateTokenPage() {
             </div>
 
             {/* Social Links */}
-            <div className="space-y-4">
+            {/* <div className="space-y-4">
               <Label className="text-lg font-semibold block">
                 Social Links 🔗
               </Label>
@@ -316,7 +308,7 @@ export default function CreateTokenPage() {
               >
                 <PlusCircle className="mr-2 h-4 w-4" /> Add Another Social Link
               </Button>
-            </div>
+            </div> */}
 
             <CardFooter className="p-0 pt-6">
               <Button

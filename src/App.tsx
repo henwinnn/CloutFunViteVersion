@@ -12,7 +12,7 @@ import { SiteHeader } from "./pages/components/site-header";
 import "./index.css";
 import { Toaster } from "./pages/components/ui/toaster";
 
-const config = getDefaultConfig({
+export const config = getDefaultConfig({
   appName: "Base Network App",
   projectId: "YOUR_PROJECT_ID", // Replace with your WalletConnect projectId
   chains: [baseSepolia],

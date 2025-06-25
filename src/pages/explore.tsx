@@ -399,8 +399,8 @@ export default function ExplorePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12); // Fixed items per page
 
-  const tokens = useGetTokens()
-  console.log({ tokens })
+  const tokens = useGetTokens();
+  console.log({ tokens });
 
   // Enhanced token data with additional marketplace metrics
   const enhancedTokens = useMemo(() => {
@@ -665,7 +665,7 @@ export default function ExplorePage() {
                         className={cn(
                           "w-10 h-10 rounded-full",
                           currentPage === pageNum &&
-                          "bg-primary text-primary-foreground"
+                            "bg-primary text-primary-foreground"
                         )}
                       >
                         {pageNum}
@@ -750,8 +750,8 @@ function TokenList({ tokens }: { tokens: any[] }) {
       <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-2 text-sm font-medium text-muted-foreground border-b border-border/40">
         <div className="col-span-4">Token</div>
         <div className="col-span-2 text-right">Price</div>
-        <div className="col-span-2 text-right">24h Change</div>
-        <div className="col-span-2 text-right">Volume</div>
+        {/* <div className="col-span-2 text-right">24h Change</div> */}
+        {/* <div className="col-span-2 text-right">Volume</div> */}
         <div className="col-span-2 text-right">Market Cap</div>
       </div>
 
@@ -794,7 +794,7 @@ function EnhancedTokenCard({ token }: { token: any }) {
               <span className="font-bold">${token.price.toFixed(4)}</span>
             </div>
 
-            <div className="flex justify-between items-center">
+            {/* <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">24h Change</span>
               <span
                 className={cn(
@@ -805,14 +805,14 @@ function EnhancedTokenCard({ token }: { token: any }) {
                 {isPositiveChange ? "+" : ""}
                 {token.priceChange24h.toFixed(2)}%
               </span>
-            </div>
+            </div> */}
 
-            <div className="flex justify-between items-center">
+            {/* <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Volume</span>
               <span className="font-medium text-sm">
                 ${(token.volume24h / 1000).toFixed(1)}K
               </span>
-            </div>
+            </div> */}
 
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Market Cap</span>
@@ -821,12 +821,12 @@ function EnhancedTokenCard({ token }: { token: any }) {
               </span>
             </div>
 
-            <div className="flex justify-between items-center">
+            {/* <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Holders</span>
               <span className="font-medium text-sm">
                 {token.holders.toLocaleString()}
               </span>
-            </div>
+            </div> */}
           </div>
 
           {token.milestones && token.milestones.length > 0 && (
