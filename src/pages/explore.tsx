@@ -29,6 +29,7 @@ import { Link } from "react-router-dom";
 
 import { cn } from "../lib/utils";
 import { Tabs, TabsList, TabsTrigger } from "./components/ui/tabs";
+import { useGetTokens } from "../hooks/useGetTokens";
 
 type SortOption = "price" | "marketCap" | "volume" | "holders" | "priceChange";
 type ViewMode = "grid" | "list";
@@ -398,6 +399,9 @@ export default function ExplorePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12); // Fixed items per page
 
+  const tokens = useGetTokens()
+  console.log({ tokens })
+
   // Enhanced token data with additional marketplace metrics
   const enhancedTokens = useMemo(() => {
     return extendedPlaceholderTokens.map((token) => ({
@@ -661,7 +665,7 @@ export default function ExplorePage() {
                         className={cn(
                           "w-10 h-10 rounded-full",
                           currentPage === pageNum &&
-                            "bg-primary text-primary-foreground"
+                          "bg-primary text-primary-foreground"
                         )}
                       >
                         {pageNum}
