@@ -790,3 +790,66 @@ export default function TokenDetailPage() {
     </div>
   );
 }
+
+// import {
+//   useAccount,
+//   useWaitForTransactionReceipt,
+//   useWriteContract,
+// } from "wagmi";
+// import { CONTRACTS, TOKEN_FACTORY } from "../constants";
+// import { useToast } from "./use-toast";
+// import { config } from "../App";
+
+// export const useCreateToken = () => {
+//   const { writeContractAsync } = useWriteContract();
+//   const { address } = useAccount();
+//   console.log("masuk");
+
+//   const createToken = async (name: string, symbol: string) => {
+//     const { toast } = useToast();
+
+//     const initialSupply = BigInt(1000000 * 10 ** 18); // 1M token
+//     const pairAmount = BigInt(500000 * 10 ** 18); // 500.000 token pair
+//     const ethAmount = BigInt(0.01 * 10 ** 18); // 0.01 ETH
+
+//     console.log("masuk create token");
+//     try {
+//       const hash = await writeContractAsync({
+//         address: CONTRACTS.TOKEN_FACTORY as `0x${string}`,
+//         abi: TOKEN_FACTORY,
+//         functionName: "createTokenWithEthPair",
+//         args: [name, symbol, initialSupply, pairAmount, ethAmount, address],
+//         value: ethAmount, // This sends the actual ETH
+//         account: address,
+//       });
+
+//       const receipt = useWaitForTransactionReceipt({
+//         hash: hash,
+//         config,
+//       });
+
+//       console.log("receipt", receipt);
+
+//       console.log("succes token");
+//       toast({
+//         title: "🚀 Create Token Successful!",
+//         // description: `You bought ${token.tokenName}. To the moon!`,
+//         // action: <CheckCircle className="text-green-500" />,
+//       });
+
+//       return true;
+//     } catch (error) {
+//       console.log("error token");
+
+//       toast({
+//         title: "🚀 Create Token Failed!",
+//         // description: `You bought ${token.tokenName}. To the moon!`,
+//         // action: <CheckCircle className="text-green-500" />,
+//       });
+//       //   console.error("Create token failed:", error);
+//       return false;
+//     }
+//   };
+
+//   return { createToken };
+// };
