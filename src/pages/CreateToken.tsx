@@ -26,6 +26,8 @@ import {
 // import { useToast } from "../hooks/use-toast;
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../hooks/use-toast";
+import { useWriteCreateToken } from "../hooks/useCreateToken";
+import { useAccount } from "wagmi";
 
 interface SocialLink {
   id: string;
@@ -49,6 +51,8 @@ export default function CreateTokenPage() {
     initialSocialLink,
   ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { CreateToken } = useWriteCreateToken();
+  const { address } = useAccount();
 
   const { toast } = useToast();
   const router = useNavigate();
@@ -90,6 +94,7 @@ export default function CreateTokenPage() {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    if (!address) return
     setIsSubmitting(true);
 
     // Basic Validation
@@ -122,6 +127,7 @@ export default function CreateTokenPage() {
       imageFile,
       socialLinks,
     });
+    CreateToken(tokenName, tokenTicker, description, BigInt(1000000000000000000000000), BigInt(500000000000000000000000), BigInt(10000000000000000), address)
 
     await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate network delay
 
