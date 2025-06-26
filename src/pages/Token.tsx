@@ -22,21 +22,30 @@ import { useToast } from "./components/ui/use-toast";
 import type React from "react";
 import { useRef, useState } from "react";
 import useTokenExplorer from "../api/useTokenExplorer";
+import { useGetPercentage } from "../hooks/useGetPercentage";
+import { useGetAllowance, useWriteBuy, useWriteSell } from "../hooks/useWriteBuySell";
+import { useAccount } from "wagmi";
 
 export default function TokenDetailPage() {
   const router = useNavigate();
   const params = useParams();
   const { toast } = useToast();
   const pair = params.id as string;
+  const { isConnected, address } = useAccount()
 
   // Move the hook to component level
   const { data: apiData, loading, error } = useTokenExplorer();
+  let token = apiData?.find((token) => token.pair === pair);
+  const percentage = useGetPercentage(token?.pair)
+  const { Buy } = useWriteBuy()
+  const { Approve, Sell } = useWriteSell()
+  const allowance = useGetAllowance(token?.token, address, token?.pair)
 
   // Try to get token from local data first, then from API data
 
   const buyButtonRef = useRef<HTMLButtonElement>(null);
   const sellButtonRef = useRef<HTMLButtonElement>(null);
-
+  const [amount, setAmount] = useState('')
   const [tradeMode, setTradeMode] = useState<"buy" | "sell">("buy");
 
   // Show loading state
@@ -61,8 +70,8 @@ export default function TokenDetailPage() {
       </div>
     );
   }
-  let token = apiData?.find((token) => token.pair === pair);
-  console.log("apiData", apiData);
+
+
 
   // Show not found state
   if (!token) {
@@ -136,6 +145,10 @@ export default function TokenDetailPage() {
   const handleBuy = (event: React.MouseEvent<HTMLButtonElement>) => {
     handleRippleEffect(event);
     // Simulate buy action
+    const isInputValid = !Number.isNaN(Number(amount))
+    if (isInputValid && isConnected) {
+      Buy(token.pair, amount)
+    }
     toast({
       title: "🚀 Purchase Successful!",
       description: `You bought ${token.name}. To the moon!`,
@@ -146,7 +159,16 @@ export default function TokenDetailPage() {
 
   const handleSell = (event: React.MouseEvent<HTMLButtonElement>) => {
     handleRippleEffect(event);
+
+    if (token?.token !== undefined) {
+      if (Number(amount) > allowance) {
+        Approve(token?.token, token.pair, amount)
+      }
+      Sell(token.pair, amount,)
+    }
+
     // Simulate sell action
+
     toast({
       title: "💸 Sale Confirmed!",
       description: `You sold ${token.name}.`,
@@ -208,10 +230,10 @@ export default function TokenDetailPage() {
       <header className="mb-8 p-6 rounded-xl bg-card/50 backdrop-blur-sm shadow-xl">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
           <Avatar className="h-20 w-20 border-4 border-primary">
-            <AvatarImage
+            {/* <AvatarImage
               src={token.creatorAvatar || "/placeholder.svg"}
               alt={token.creatorName}
-            />
+            /> */}
             <AvatarFallback className="text-3xl">{token.name}</AvatarFallback>
           </Avatar>
           <div>
@@ -354,13 +376,12 @@ export default function TokenDetailPage() {
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">24h Change</span>
                 <span
-                  className={`font-semibold ${
-                    token.priceChange24h >= 0
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }`}
+                  className={`font-semibold ${Number(token.latestMetrics.priceChange24h) >= 0
+                    ? "text-green-500"
+                    : "text-red-500"
+                    }`}
                 >
-                  {token.priceChange24h}%
+                  {Number(token.latestMetrics.priceChange24h)}%
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -389,21 +410,19 @@ export default function TokenDetailPage() {
               <div className="flex rounded-lg bg-muted p-1">
                 <button
                   onClick={() => setTradeMode("buy")}
-                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    tradeMode === "buy"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${tradeMode === "buy"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                    }`}
                 >
                   Buy
                 </button>
                 <button
                   onClick={() => setTradeMode("sell")}
-                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    tradeMode === "sell"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${tradeMode === "sell"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                    }`}
                 >
                   Sell
                 </button>
@@ -413,11 +432,13 @@ export default function TokenDetailPage() {
               <div className="flex items-center space-x-2">
                 <input
                   type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
                   className="input flex-1 h-10 rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
                 <span className="font-semibold text-primary">
-                  {token.tokenTicker}
+                  {token.symbol}
                 </span>
               </div>
 
@@ -429,7 +450,7 @@ export default function TokenDetailPage() {
                   className="w-full bg-green-600 hover:bg-green-700 text-white ripple-button"
                   onClick={handleBuy}
                 >
-                  Buy {token.tokenTicker}
+                  Buy {token.symbol}
                 </Button>
               ) : (
                 <Button
@@ -438,13 +459,13 @@ export default function TokenDetailPage() {
                   className="w-full bg-red-600 hover:bg-red-700 text-white ripple-button"
                   onClick={handleSell}
                 >
-                  Sell {token.tokenTicker}
+                  Sell {token.symbol}
                 </Button>
               )}
             </CardContent>
           </Card>
 
-          {token.bondingCurveProgress !== undefined && (
+          {percentage !== undefined && (
             <Card className="bg-card/50 backdrop-blur-sm shadow-xl">
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -453,7 +474,7 @@ export default function TokenDetailPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <BondingCurveProgress value={token.bondingCurveProgress} />
+                <BondingCurveProgress value={percentage} />
                 <p className="text-xs text-muted-foreground mt-2">
                   The bonding curve determines the token's price based on its
                   supply. As more tokens are bought, the price increases.
@@ -466,66 +487,3 @@ export default function TokenDetailPage() {
     </div>
   );
 }
-
-// import {
-//   useAccount,
-//   useWaitForTransactionReceipt,
-//   useWriteContract,
-// } from "wagmi";
-// import { CONTRACTS, TOKEN_FACTORY } from "../constants";
-// import { useToast } from "./use-toast";
-// import { config } from "../App";
-
-// export const useCreateToken = () => {
-//   const { writeContractAsync } = useWriteContract();
-//   const { address } = useAccount();
-//   console.log("masuk");
-
-//   const createToken = async (name: string, symbol: string) => {
-//     const { toast } = useToast();
-
-//     const initialSupply = BigInt(1000000 * 10 ** 18); // 1M token
-//     const pairAmount = BigInt(500000 * 10 ** 18); // 500.000 token pair
-//     const ethAmount = BigInt(0.01 * 10 ** 18); // 0.01 ETH
-
-//     console.log("masuk create token");
-//     try {
-//       const hash = await writeContractAsync({
-//         address: CONTRACTS.TOKEN_FACTORY as `0x${string}`,
-//         abi: TOKEN_FACTORY,
-//         functionName: "createTokenWithEthPair",
-//         args: [name, symbol, initialSupply, pairAmount, ethAmount, address],
-//         value: ethAmount, // This sends the actual ETH
-//         account: address,
-//       });
-
-//       const receipt = useWaitForTransactionReceipt({
-//         hash: hash,
-//         config,
-//       });
-
-//       console.log("receipt", receipt);
-
-//       console.log("succes token");
-//       toast({
-//         title: "🚀 Create Token Successful!",
-//         // description: `You bought ${token.tokenName}. To the moon!`,
-//         // action: <CheckCircle className="text-green-500" />,
-//       });
-
-//       return true;
-//     } catch (error) {
-//       console.log("error token");
-
-//       toast({
-//         title: "🚀 Create Token Failed!",
-//         // description: `You bought ${token.tokenName}. To the moon!`,
-//         // action: <CheckCircle className="text-green-500" />,
-//       });
-//       //   console.error("Create token failed:", error);
-//       return false;
-//     }
-//   };
-
-//   return { createToken };
-// };

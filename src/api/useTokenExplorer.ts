@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
+import { TokenData } from "../types/types";
 
 const useTokenExplorer = () => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<TokenData[] | null>(null)
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTokenData = async () => {
@@ -20,7 +21,7 @@ const useTokenExplorer = () => {
         const result = await response.json();
         setData(result);
         setError(null);
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message);
         setData(null);
       } finally {
