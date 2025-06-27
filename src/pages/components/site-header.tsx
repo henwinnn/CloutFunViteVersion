@@ -22,11 +22,12 @@ import useOAuth2 from "../../hooks/useOauth";
 import { googleOAuthConfig } from "../../config/googleOAuthConfig";
 import { cn } from "../..//lib/utils";
 import axios from "axios";
+import { useAccount } from "wagmi";
 
 export function SiteHeader() {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Mock login state
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [oneGenerateProof, setOneGenerateProof] = useState(true);
+  const { address } = useAccount();
 
   const navLinks = [
     { to: "/", label: "Explore" },
@@ -99,15 +100,17 @@ export function SiteHeader() {
             <span className="sr-only">Toggle Menu</span>
           </Button>
 
-          <Link
-            to="/create-token"
-            className={cn(
-              buttonVariants({ variant: "default", size: "sm" }),
-              "hidden sm:inline-flex bg-brand-gradient hover:opacity-90 transition-opacity"
-            )}
-          >
-            <Sparkles className="mr-2 h-4 w-4" /> Create Tokens
-          </Link>
+          {address && (
+            <Link
+              to="/create-token"
+              className={cn(
+                buttonVariants({ variant: "default", size: "sm" }),
+                "hidden sm:inline-flex bg-brand-gradient hover:opacity-90 transition-opacity"
+              )}
+            >
+              <Sparkles className="mr-2 h-4 w-4" /> Create Tokens
+            </Link>
+          )}
 
           <div className="hidden sm:flex items-center space-x-2">
             <ConnectButton />
