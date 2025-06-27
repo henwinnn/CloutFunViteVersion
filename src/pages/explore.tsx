@@ -752,36 +752,59 @@ function TokenGrid({ tokens }: { tokens: any[] }) {
   );
 }
 
-// function TokenList({ tokens }: { tokens: any[] }) {
-//   if (tokens.length === 0) {
-//     return (
-//       <div className="text-center py-12">
-//         <p className="text-lg text-muted-foreground mb-2">No tokens found</p>
-//         <p className="text-sm text-muted-foreground">
-//           Try adjusting your search or filters
-//         </p>
-//       </div>
-//     );
-//   }
+function TokenList({ tokens }: { tokens: any[] }) {
+  const { data, loading, error } = useTokenExplorer();
 
-//   return (
-//     <div className="space-y-3">
-//       {/* Table Header */}
-//       <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-2 text-sm font-medium text-muted-foreground border-b border-border/40">
-//         <div className="col-span-4">Token</div>
-//         <div className="col-span-2 text-right">Price</div>
-//         {/* <div className="col-span-2 text-right">24h Change</div> */}
-//         {/* <div className="col-span-2 text-right">Volume</div> */}
-//         <div className="col-span-2 text-right">Market Cap</div>
-//       </div>
-//       {/* Token Rows */}
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-lg text-muted-foreground mb-2">Loading tokens...</p>
+      </div>
+    );
+  }
 
-//       {data?.map((token) => (
-//         <TokenListItem key={token.pair} token={token} />
-//       ))}
-//     </div>
-//   );
-// }
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-lg text-muted-foreground mb-2">
+          Error loading tokens
+        </p>
+      </div>
+    );
+  }
+
+  // Use the passed tokens prop as fallback if data is null
+  const tokensToDisplay = data || tokens;
+
+  if (tokensToDisplay.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-lg text-muted-foreground mb-2">No tokens found</p>
+        <p className="text-sm text-muted-foreground">
+          Try adjusting your search or filters
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {/* Table Header */}
+      <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-2 text-sm font-medium text-muted-foreground border-b border-border/40">
+        <div className="col-span-4">Token</div>
+        <div className="col-span-2 text-right">Price</div>
+        {/* <div className="col-span-2 text-right">24h Change</div> */}
+        {/* <div className="col-span-2 text-right">Volume</div> */}
+        <div className="col-span-2 text-right">Market Cap</div>
+      </div>
+      {/* Token Rows */}
+
+      {tokensToDisplay?.map((token) => (
+        <TokenListItem key={token.pair} token={token} />
+      ))}
+    </div>
+  );
+}
 
 function EnhancedTokenCard({ token }: { token: any }) {
   const isPositiveChange = token.priceChange24h >= 0;
@@ -873,7 +896,7 @@ function TokenListItem({ token }: { token: any }) {
 
   console.log("token", token);
   return (
-    <Link to={`/token/${token.id}`} className="block group">
+    <Link to={`/token/${token.pair}`} className="block group">
       <Card className="hover:shadow-md transition-all duration-200 bg-card/50 backdrop-blur-sm">
         <CardContent className="p-4">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
@@ -884,23 +907,21 @@ function TokenListItem({ token }: { token: any }) {
                   src={token.creatorAvatar || "/placeholder.svg"}
                   alt={token.creatorName}
                 />
-                <AvatarFallback>
-                  {token.tokenName.substring(0, 1)}
-                </AvatarFallback>
+                <AvatarFallback>{token.name}</AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
                 <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
-                  {token.tokenName}
+                  {token.name}
                 </h3>
                 <p className="text-sm text-muted-foreground truncate">
-                  {token.tokenTicker} • {token.creatorName}
+                  {token.symbol} • {token.name}
                 </p>
               </div>
             </div>
 
             {/* Price */}
             <div className="md:col-span-2 md:text-right">
-              <p className="font-bold">${token.price.toFixed(4)}</p>
+              <p className="font-bold">${token.price}</p>
             </div>
 
             {/* 24h Change */}
@@ -912,22 +933,20 @@ function TokenListItem({ token }: { token: any }) {
                 )}
               >
                 {isPositiveChange ? "+" : ""}
-                {token.priceChange24h.toFixed(2)}%
+                {token.priceChange24h}%
               </span>
             </div>
 
             {/* Volume */}
             <div className="md:col-span-2 md:text-right">
               <p className="font-medium">
-                ${(token.volume24h / 1000).toFixed(1)}K
+                {/* ${(token.volume24h / 1000).toFixed(1)}K */}
               </p>
             </div>
 
             {/* Market Cap */}
             <div className="md:col-span-2 md:text-right">
-              <p className="font-medium">
-                ${(token.marketCap / 1000000).toFixed(2)}M
-              </p>
+              <p className="font-medium">${token.marketCap / 1000000}M</p>
             </div>
           </div>
         </CardContent>
