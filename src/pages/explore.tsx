@@ -398,6 +398,7 @@ export default function ExplorePage() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12); // Fixed items per page
+  const [dataToken, setDataToken] = useState([]);
 
   // Enhanced token data with additional marketplace metrics
   const enhancedTokens = useMemo(() => {
@@ -463,10 +464,10 @@ export default function ExplorePage() {
   }, [enhancedTokens, filter, searchQuery, sortBy, sortOrder]);
 
   // Pagination logic
-  const totalPages = Math.ceil(filteredTokens.length / itemsPerPage);
+  const totalPages = Math.ceil(dataToken.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const paginatedTokens = filteredTokens.slice(startIndex, endIndex);
+  const paginatedTokens = dataToken.slice(startIndex, endIndex);
 
   // Reset to page 1 when filters change
   const resetPagination = () => setCurrentPage(1);
@@ -599,9 +600,9 @@ export default function ExplorePage() {
       <section className="w-full py-8">
         <div className="container mx-auto px-4 max-w-7xl">
           {viewMode === "grid" ? (
-            <TokenGrid tokens={paginatedTokens} />
+            <TokenGrid tokens={paginatedTokens} setDataToken={setDataToken} />
           ) : (
-            <TokenList tokens={paginatedTokens} />
+            <TokenList tokens={paginatedTokens} setDataToken={setDataToken} />
           )}
 
           {/* Pagination Controls */}
@@ -708,7 +709,13 @@ export default function ExplorePage() {
   );
 }
 
-function TokenGrid({ tokens }: { tokens: any[] }) {
+function TokenGrid({
+  tokens,
+  setDataToken,
+}: {
+  tokens: any[];
+  setDataToken: (value: any) => void;
+}) {
   const { data, loading, error } = useTokenExplorer();
 
   if (loading) {
@@ -742,7 +749,7 @@ function TokenGrid({ tokens }: { tokens: any[] }) {
       </div>
     );
   }
-
+  setDataToken(tokensToDisplay);
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {tokensToDisplay.map((token) => (
@@ -752,7 +759,13 @@ function TokenGrid({ tokens }: { tokens: any[] }) {
   );
 }
 
-function TokenList({ tokens }: { tokens: any[] }) {
+function TokenList({
+  tokens,
+  setDataToken,
+}: {
+  tokens: any[];
+  setDataToken: (value: any) => void;
+}) {
   const { data, loading, error } = useTokenExplorer();
 
   if (loading) {
@@ -786,6 +799,7 @@ function TokenList({ tokens }: { tokens: any[] }) {
       </div>
     );
   }
+  setDataToken(tokensToDisplay);
 
   return (
     <div className="space-y-3">
