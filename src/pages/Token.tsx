@@ -25,6 +25,8 @@ import useTokenExplorer from "../api/useTokenExplorer";
 import { useGetPercentage } from "../hooks/useGetPercentage";
 import { useGetAllowance, useWriteBuy, useWriteSell } from "../hooks/useWriteBuySell";
 import { useAccount } from "wagmi";
+import useTokenInfo from "../api/useTokenInfo";
+import { useGetBalance } from "../hooks/useGetTokenBalance";
 
 export default function TokenDetailPage() {
   const router = useNavigate();
@@ -32,10 +34,12 @@ export default function TokenDetailPage() {
   const { toast } = useToast();
   const pair = params.id as string;
   const { isConnected, address } = useAccount()
-
+  const tokenInfo = useTokenInfo(pair)
+  const tokenData = tokenInfo?.data
   // Move the hook to component level
   const { data: apiData, loading, error } = useTokenExplorer();
   let token = apiData?.find((token) => token.pair === pair);
+  const balance = useGetBalance(token?.token, address)
   const percentage = useGetPercentage(token?.pair)
   const { Buy } = useWriteBuy()
   const { Approve, Sell } = useWriteSell()
@@ -159,8 +163,9 @@ export default function TokenDetailPage() {
 
   const handleSell = (event: React.MouseEvent<HTMLButtonElement>) => {
     handleRippleEffect(event);
+    const isBalanceEnough = Number(amount) <= balance
 
-    if (token?.token !== undefined) {
+    if (token?.token !== undefined && isBalanceEnough) {
       if (Number(amount) > allowance) {
         Approve(token?.token, token.pair, amount)
       }
@@ -368,9 +373,10 @@ export default function TokenDetailPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Price (USD)</span>
+                <span className="text-muted-foreground">Price (ETH)</span>
                 <span className="font-semibold text-lg">
-                  ${token.tokenPrice}
+                  {/* ${Number(tokenData?.pricePerToken)/1e18} */}
+                  {`$${(Number(tokenData?.pricePerToken)/1e18).toFixed(18)}`}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -386,7 +392,7 @@ export default function TokenDetailPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Market Cap</span>
-                <span className="font-semibold">${token.marketCap}</span>
+                <span className="font-semibold">${Number(tokenData?.marketCap)/1e18}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Holders</span>
