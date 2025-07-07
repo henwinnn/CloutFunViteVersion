@@ -41,7 +41,7 @@ export default function TokenDetailPage() {
   const tokenData = tokenInfo?.data;
   // Move the hook to component level
   const { data: apiData } = useTokenExplorerQuery();
-  let token = apiData?.tokensMap?.find((token) => token.pair === pair);
+  let token = apiData?.tokensMap?.find((token: any) => token.pair === pair);
   const balance = useGetBalance(token?.token, address);
   const percentage = useGetPercentage(token?.pair);
   const { Buy } = useWriteBuy();

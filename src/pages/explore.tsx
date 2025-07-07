@@ -759,7 +759,7 @@ function TokenGrid({
   setDataToken(tokensToDisplay);
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {tokensToDisplay.map((token) => (
+      {tokensToDisplay.map((token: any) => (
         <EnhancedTokenCard key={token.pair} token={token} />
       ))}
     </div>
@@ -820,7 +820,7 @@ function TokenList({
       </div>
       {/* Token Rows */}
 
-      {tokensToDisplay?.map((token) => (
+      {tokensToDisplay?.map((token: any) => (
         <TokenListItem key={token.pair} token={token} />
       ))}
     </div>
