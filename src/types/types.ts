@@ -31,3 +31,10 @@ export type TokenData = {
     latestMetrics: TokenMetrics
     allMetrics: TokenMetrics[]
 }
+
+export type TokenInfo = {
+    marketCap: string
+    pairAddress: string
+    pricePerETH: string
+    pricePerToken: string
+}

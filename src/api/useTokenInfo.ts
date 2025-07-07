@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { TokenData } from "../types/types";
+import { TokenData, TokenInfo } from "../types/types";
 
-const useTokenExplorer = () => {
-  const [data, setData] = useState<TokenData[] | null>(null)
+//CG-GqhpcCXadMuF2zwJUr5H2XYv
+
+const useTokenInfo = (pair: string) => {
+  const [data, setData] = useState<TokenInfo | null>(null)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -11,7 +13,7 @@ const useTokenExplorer = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          "https://cloutponder.onrender.com/token-explorer"
+          `https://cloutponder.onrender.com/token/${pair}`
         );
 
         if (!response.ok) {
@@ -35,4 +37,4 @@ const useTokenExplorer = () => {
   return { data, loading, error };
 };
 
-export default useTokenExplorer;
+export default useTokenInfo;

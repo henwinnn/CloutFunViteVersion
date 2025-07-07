@@ -23,11 +23,14 @@ import { googleOAuthConfig } from "../../config/googleOAuthConfig";
 import { cn } from "../..//lib/utils";
 import axios from "axios";
 import { useAccount } from "wagmi";
+import { useToast } from "../../hooks/use-toast";
 
 export function SiteHeader() {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Mock login state
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { address } = useAccount();
+  const { toast } = useToast();
+  const [isLoadingGenerateProof, setIsLoadingGenerateProof] = useState(false);
 
   const navLinks = [
     { to: "/", label: "Explore" },
@@ -41,6 +44,7 @@ export function SiteHeader() {
   });
 
   const generateProof = async () => {
+    setIsLoadingGenerateProof(true);
     const token = accessToken;
     if (!token) {
       console.error("No valid token available");
@@ -56,11 +60,22 @@ export function SiteHeader() {
       );
 
       console.log("Proof generated:", res.data);
-      alert("Proof successfully generated! Check console for details.");
+
+      localStorage.setItem("proofData", JSON.stringify(res.data));
+
+      toast({
+        title: "Proof Generated",
+        description: `Proof successfully generated! Check console for details.`,
+        variant: "default",
+      });
+
+      // alert("Proof successfully generated! Check console for details.");
     } catch (error) {
       console.error("Failed to generate proof:", error);
       alert("Failed to generate proof");
     }
+
+    setIsLoadingGenerateProof(false);
   };
 
   // useEffect(() => {
@@ -74,6 +89,16 @@ export function SiteHeader() {
   // }, [accessToken]);
 
   console.log("accessToken", accessToken);
+
+  useEffect(() => {
+    if (isLoadingGenerateProof) {
+      toast({
+        title: "Generating Proof...",
+        description: "Please wait while we generate your proof.",
+        variant: "default",
+      });
+    }
+  }, [isLoadingGenerateProof]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

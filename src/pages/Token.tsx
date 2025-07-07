@@ -4,10 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "./components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar";
-import { Badge } from "./components/ui/badge";
 import { InteractiveChart } from "./components/interactive-chart";
 import { BondingCurveProgress } from "./components/bonding-curve-progress";
-import { placeholderTokens as originalPlaceholderTokens } from "../lib/placeholder-data";
 import {
   ArrowLeft,
   TrendingUp,
@@ -21,57 +19,64 @@ import {
 import { useToast } from "./components/ui/use-toast";
 import type React from "react";
 import { useRef, useState } from "react";
-import useTokenExplorer from "../api/useTokenExplorer";
+// import useTokenExplorer from "../api/useTokenExplorer";
 import { useGetPercentage } from "../hooks/useGetPercentage";
-import { useGetAllowance, useWriteBuy, useWriteSell } from "../hooks/useWriteBuySell";
+import {
+  useGetAllowance,
+  useWriteBuy,
+  useWriteSell,
+} from "../hooks/useWriteBuySell";
 import { useAccount } from "wagmi";
+import useTokenInfo from "../api/useTokenInfo";
+import { useGetBalance } from "../hooks/useGetTokenBalance";
+import { useTokenExplorerQuery } from "../hooks/useTokenExplorerQuery";
 
 export default function TokenDetailPage() {
   const router = useNavigate();
   const params = useParams();
   const { toast } = useToast();
   const pair = params.id as string;
-  const { isConnected, address } = useAccount()
-
+  const { isConnected, address } = useAccount();
+  const tokenInfo = useTokenInfo(pair);
+  const tokenData = tokenInfo?.data;
   // Move the hook to component level
-  const { data: apiData, loading, error } = useTokenExplorer();
-  let token = apiData?.find((token) => token.pair === pair);
-  const percentage = useGetPercentage(token?.pair)
-  const { Buy } = useWriteBuy()
-  const { Approve, Sell } = useWriteSell()
-  const allowance = useGetAllowance(token?.token, address, token?.pair)
+  const { data: apiData } = useTokenExplorerQuery();
+  let token = apiData?.tokensMap?.find((token: any) => token.pair === pair);
+  const balance = useGetBalance(token?.token, address);
+  const percentage = useGetPercentage(token?.pair);
+  const { Buy } = useWriteBuy();
+  const { Approve, Sell } = useWriteSell();
+  const allowance = useGetAllowance(token?.token, address, token?.pair);
 
   // Try to get token from local data first, then from API data
 
   const buyButtonRef = useRef<HTMLButtonElement>(null);
   const sellButtonRef = useRef<HTMLButtonElement>(null);
-  const [amount, setAmount] = useState('')
+  const [amount, setAmount] = useState("");
   const [tradeMode, setTradeMode] = useState<"buy" | "sell">("buy");
 
   // Show loading state
-  if (loading) {
-    return (
-      <div className="container mx-auto py-10 text-center">
-        <p className="text-lg text-muted-foreground mb-2">Loading token...</p>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="container mx-auto py-10 text-center">
+  //       <p className="text-lg text-muted-foreground mb-2">Loading token...</p>
+  //     </div>
+  //   );
+  // }
 
-  // Show error state
-  if (error) {
-    return (
-      <div className="container mx-auto py-10 text-center">
-        <p className="text-lg text-muted-foreground mb-2">
-          Error loading token
-        </p>
-        <Button onClick={() => router(-1)} variant="link" className="mt-4">
-          <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
-        </Button>
-      </div>
-    );
-  }
-
-
+  // // Show error state
+  // if (error) {
+  //   return (
+  //     <div className="container mx-auto py-10 text-center">
+  //       <p className="text-lg text-muted-foreground mb-2">
+  //         Error loading token
+  //       </p>
+  //       <Button onClick={() => router(-1)} variant="link" className="mt-4">
+  //         <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
+  //       </Button>
+  //     </div>
+  //   );
+  // }
 
   // Show not found state
   if (!token) {
@@ -145,9 +150,9 @@ export default function TokenDetailPage() {
   const handleBuy = (event: React.MouseEvent<HTMLButtonElement>) => {
     handleRippleEffect(event);
     // Simulate buy action
-    const isInputValid = !Number.isNaN(Number(amount))
+    const isInputValid = !Number.isNaN(Number(amount));
     if (isInputValid && isConnected) {
-      Buy(token.pair, amount)
+      Buy(token.pair, amount);
     }
     toast({
       title: "🚀 Purchase Successful!",
@@ -159,12 +164,13 @@ export default function TokenDetailPage() {
 
   const handleSell = (event: React.MouseEvent<HTMLButtonElement>) => {
     handleRippleEffect(event);
+    const isBalanceEnough = Number(amount) <= balance;
 
-    if (token?.token !== undefined) {
+    if (token?.token !== undefined && isBalanceEnough) {
       if (Number(amount) > allowance) {
-        Approve(token?.token, token.pair, amount)
+        Approve(token?.token, token.pair, amount);
       }
-      Sell(token.pair, amount,)
+      Sell(token.pair, amount);
     }
 
     // Simulate sell action
@@ -368,25 +374,29 @@ export default function TokenDetailPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Price (USD)</span>
+                <span className="text-muted-foreground">Price (ETH)</span>
                 <span className="font-semibold text-lg">
-                  ${token.tokenPrice}
+                  {/* ${Number(tokenData?.pricePerToken)/1e18} */}
+                  {/* {`$${(Number(tokenData?.pricePerToken) / 1e18).toFixed(18)}`} */}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">24h Change</span>
-                <span
-                  className={`font-semibold ${Number(token.latestMetrics.priceChange24h) >= 0
-                    ? "text-green-500"
-                    : "text-red-500"
-                    }`}
+                {/* <span
+                  className={`font-semibold ${
+                    Number(token.latestMetrics.priceChange24h) >= 0
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
                 >
                   {Number(token.latestMetrics.priceChange24h)}%
-                </span>
+                </span> */}
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Market Cap</span>
-                <span className="font-semibold">${token.marketCap}</span>
+                <span className="font-semibold">
+                  ${Number(tokenData?.marketCap) / 1e18}
+                </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Holders</span>
@@ -410,19 +420,21 @@ export default function TokenDetailPage() {
               <div className="flex rounded-lg bg-muted p-1">
                 <button
                   onClick={() => setTradeMode("buy")}
-                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${tradeMode === "buy"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                    }`}
+                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    tradeMode === "buy"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   Buy
                 </button>
                 <button
                   onClick={() => setTradeMode("sell")}
-                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${tradeMode === "sell"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                    }`}
+                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    tradeMode === "sell"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   Sell
                 </button>
