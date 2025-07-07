@@ -30,6 +30,7 @@ import { Link } from "react-router-dom";
 import { cn } from "../lib/utils";
 import { Tabs, TabsList, TabsTrigger } from "./components/ui/tabs";
 import { useTokenExplorerQuery } from "../hooks/useTokenExplorerQuery";
+import { useTokenDailyMetricsQuery } from "../hooks/useTokenDailyMetrics";
 
 type SortOption = "price" | "marketCap" | "volume" | "holders" | "priceChange";
 type ViewMode = "grid" | "list";
@@ -717,7 +718,12 @@ function TokenGrid({
   setDataToken: (value: any) => void;
 }) {
   const { data } = useTokenExplorerQuery();
-  console.log("token", data?.tokensMap);
+
+  const { data: tokenMetrics } = useTokenDailyMetricsQuery();
+  console.log("data", data);
+  // const calculatedMetrics = calculatePrice24h(data, tokenMetrics?.dataMetrics);
+  console.log("dailyMetricsData depan", tokenMetrics?.dataMetrics);
+  // console.log("calculatedMetrics", calculatedMetrics);
 
   // if (loading) {
   //   return (

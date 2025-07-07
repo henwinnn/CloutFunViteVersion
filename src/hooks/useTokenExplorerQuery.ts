@@ -32,7 +32,6 @@ const fetchTokenExplorer = async () => {
 
   const { data } = await res.json();
 
-  console.log("data dasda", data.tokenPrices.items);
   return { tokensMap: data.tokenPrices.items };
 };
 
