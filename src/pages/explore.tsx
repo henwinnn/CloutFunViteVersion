@@ -29,7 +29,7 @@ import { Link } from "react-router-dom";
 
 import { cn } from "../lib/utils";
 import { Tabs, TabsList, TabsTrigger } from "./components/ui/tabs";
-import useTokenExplorer from "../api/useTokenExplorer";
+import { useTokenExplorerQuery } from "../hooks/useTokenExplorerQuery";
 
 type SortOption = "price" | "marketCap" | "volume" | "holders" | "priceChange";
 type ViewMode = "grid" | "list";
@@ -716,28 +716,29 @@ function TokenGrid({
   tokens: any[];
   setDataToken: (value: any) => void;
 }) {
-  const { data, loading, error } = useTokenExplorer();
+  const { data } = useTokenExplorerQuery();
+  console.log("token", data?.tokensMap);
 
-  if (loading) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-lg text-muted-foreground mb-2">Loading tokens...</p>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="text-center py-12">
+  //       <p className="text-lg text-muted-foreground mb-2">Loading tokens...</p>
+  //     </div>
+  //   );
+  // }
 
-  if (error) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-lg text-muted-foreground mb-2">
-          Error loading tokens
-        </p>
-      </div>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <div className="text-center py-12">
+  //       <p className="text-lg text-muted-foreground mb-2">
+  //         Error loading tokens
+  //       </p>
+  //     </div>
+  //   );
+  // }
 
   // Use the passed tokens prop as fallback if data is null
-  const tokensToDisplay = data || tokens;
+  const tokensToDisplay = data?.tokensMap || tokens;
 
   if (tokensToDisplay.length === 0) {
     return (
@@ -766,28 +767,28 @@ function TokenList({
   tokens: any[];
   setDataToken: (value: any) => void;
 }) {
-  const { data, loading, error } = useTokenExplorer();
+  const { data } = useTokenExplorerQuery();
 
-  if (loading) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-lg text-muted-foreground mb-2">Loading tokens...</p>
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="text-center py-12">
+  //       <p className="text-lg text-muted-foreground mb-2">Loading tokens...</p>
+  //     </div>
+  //   );
+  // }
 
-  if (error) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-lg text-muted-foreground mb-2">
-          Error loading tokens
-        </p>
-      </div>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <div className="text-center py-12">
+  //       <p className="text-lg text-muted-foreground mb-2">
+  //         Error loading tokens
+  //       </p>
+  //     </div>
+  //   );
+  // }
 
   // Use the passed tokens prop as fallback if data is null
-  const tokensToDisplay = data || tokens;
+  const tokensToDisplay = data?.tokensMap || tokens;
 
   if (tokensToDisplay.length === 0) {
     return (
@@ -860,21 +861,21 @@ function EnhancedTokenCard({ token }: { token: any }) {
                 )}
               >
                 {isPositiveChange ? "+" : ""}
-                {token.latestMetrics.priceChange24h}%
+                {/* {token.latestMetrics.priceChange24h}% */}
               </span>
             </div>
 
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Volume</span>
               <span className="font-medium text-sm">
-                ${token.latestMetrics.volume24h / 1000}K
+                {/* ${token.latestMetrics.volume24h / 1000}K */}
               </span>
             </div>
 
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Market Cap</span>
               <span className="font-medium text-sm">
-                ${token.marketCap / 1000000}M
+                {/* ${token.marketCap / 1000000}M */}
               </span>
             </div>
 
