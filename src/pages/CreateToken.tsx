@@ -28,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "../hooks/use-toast";
 import { useWriteCreateToken } from "../hooks/useCreateToken";
 import { useAccount } from "wagmi";
+import { getProofData } from "../util/youtube";
 
 interface SocialLink {
   id: string;
@@ -42,7 +43,13 @@ const initialSocialLink: SocialLink = {
 };
 
 export default function CreateTokenPage() {
-  const [tokenName, setTokenName] = useState("");
+  const proofData = getProofData();
+  const { channelTitle, channelThumbnail } = proofData || {
+    channelTitle: "",
+    channelThumbnail: "",
+  };
+
+  const [tokenName, setTokenName] = useState(channelTitle);
   const [tokenTicker, setTokenTicker] = useState("");
   const [description, setDescription] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -53,6 +60,9 @@ export default function CreateTokenPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { CreateToken, error } = useWriteCreateToken();
   const { address } = useAccount();
+
+  console.log("channelTitle", channelTitle);
+  console.log("channelThumbnail", channelThumbnail);
 
   const { toast } = useToast();
   const router = useNavigate();
@@ -203,7 +213,8 @@ export default function CreateTokenPage() {
                 id="token-name"
                 placeholder="e.g., My Awesome Project (from Twitter/Social)"
                 value={tokenName}
-                onChange={(e) => setTokenName(e.target.value)}
+                // onChange={(e) => setTokenName(e.target.value)}
+                disabled
                 required
                 className="h-12 text-base"
               />
