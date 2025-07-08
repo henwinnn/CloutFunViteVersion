@@ -19,10 +19,13 @@ const fetchTokenExplorer = async () => {
       marketCap
       name
       pair
+      priceChange24h
+      priceChangePercent24h
       symbol
       timestamp
       token
       tokenPrice
+      volume24h
     }
   }
 }
