@@ -526,7 +526,7 @@ function TokenListItem({ token }: { token: any }) {
 
             {/* Price */}
             <div className="md:col-span-2 md:text-right">
-              <p className="font-bold">${token.price}</p>
+              <p className="font-bold">${token.tokenPrice}</p>
             </div>
 
             {/* 24h Change */}
@@ -545,7 +545,7 @@ function TokenListItem({ token }: { token: any }) {
             {/* Volume */}
             <div className="md:col-span-2 md:text-right">
               <p className="font-medium">
-                {/* ${(token.volume24h / 1000).toFixed(1)}K */}
+                ${(token.volume24h / 1000).toFixed(1)}K
               </p>
             </div>
 

@@ -377,20 +377,20 @@ export default function TokenDetailPage() {
                 <span className="text-muted-foreground">Price (ETH)</span>
                 <span className="font-semibold text-lg">
                   {/* ${Number(tokenData?.pricePerToken)/1e18} */}
-                  {/* {`$${(Number(tokenData?.pricePerToken) / 1e18).toFixed(18)}`} */}
+                  {`$${(Number(tokenData?.pricePerToken) / 1e18).toFixed(18)}`}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">24h Change</span>
-                {/* <span
+                <span
                   className={`font-semibold ${
-                    Number(token.latestMetrics.priceChange24h) >= 0
+                    Number(token.priceChange24h) >= 0
                       ? "text-green-500"
                       : "text-red-500"
                   }`}
                 >
-                  {Number(token.latestMetrics.priceChange24h)}%
-                </span> */}
+                  {Number(token.priceChange24h)}%
+                </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Market Cap</span>
