@@ -301,7 +301,7 @@ function TokenGrid({
   tokens: any[];
   setDataToken: (value: any) => void;
 }) {
-  const { data } = useTokenExplorerQuery();
+  const { data, isLoading, isError } = useTokenExplorerQuery();
 
   const { data: tokenMetrics } = useTokenDailyMetricsQuery();
   console.log("data", data);
@@ -309,23 +309,23 @@ function TokenGrid({
   console.log("dailyMetricsData depan", tokenMetrics?.dataMetrics);
   // console.log("calculatedMetrics", calculatedMetrics);
 
-  // if (loading) {
-  //   return (
-  //     <div className="text-center py-12">
-  //       <p className="text-lg text-muted-foreground mb-2">Loading tokens...</p>
-  //     </div>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-lg text-muted-foreground mb-2">Loading tokens...</p>
+      </div>
+    );
+  }
 
-  // if (error) {
-  //   return (
-  //     <div className="text-center py-12">
-  //       <p className="text-lg text-muted-foreground mb-2">
-  //         Error loading tokens
-  //       </p>
-  //     </div>
-  //   );
-  // }
+  if (isError) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-lg text-muted-foreground mb-2">
+          Error loading tokens
+        </p>
+      </div>
+    );
+  }
 
   // Use the passed tokens prop as fallback if data is null
   const tokensToDisplay = data?.tokensMap || tokens;
@@ -357,25 +357,25 @@ function TokenList({
   tokens: any[];
   setDataToken: (value: any) => void;
 }) {
-  const { data } = useTokenExplorerQuery();
+  const { data, isLoading, isError } = useTokenExplorerQuery();
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="text-center py-12">
-  //       <p className="text-lg text-muted-foreground mb-2">Loading tokens...</p>
-  //     </div>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-lg text-muted-foreground mb-2">Loading tokens...</p>
+      </div>
+    );
+  }
 
-  // if (error) {
-  //   return (
-  //     <div className="text-center py-12">
-  //       <p className="text-lg text-muted-foreground mb-2">
-  //         Error loading tokens
-  //       </p>
-  //     </div>
-  //   );
-  // }
+  if (isError) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-lg text-muted-foreground mb-2">
+          Error loading tokens
+        </p>
+      </div>
+    );
+  }
 
   // Use the passed tokens prop as fallback if data is null
   const tokensToDisplay = data?.tokensMap || tokens;

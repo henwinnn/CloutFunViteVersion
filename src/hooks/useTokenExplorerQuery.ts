@@ -33,15 +33,30 @@ const fetchTokenExplorer = async () => {
     }),
   });
 
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
+
   const { data } = await res.json();
 
   return { tokensMap: data.tokenPrices.items };
 };
 
 export const useTokenExplorerQuery = () => {
-  return useQuery({
+  const query = useQuery({
     queryKey: ["tokenPrices"],
     queryFn: fetchTokenExplorer,
     refetchInterval: 10000, // Refetch every 10 seconds
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
+
+  return {
+    ...query,
+    tokensMap: query.data?.tokensMap || [],
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error,
+    isRefetching: query.isRefetching,
+  };
 };
