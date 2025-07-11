@@ -13,7 +13,8 @@ export const useWriteCreateToken = () => {
   const CreateToken = async (
     name: string,
     symbol: string,
-    description: string
+    description: string,
+    url: string
     // initialSupply: BigInt,
     // pairAmount: BigInt,
     // ethAmount: BigInt,
@@ -24,13 +25,16 @@ export const useWriteCreateToken = () => {
       abi: TOKEN_FACTORY,
       functionName: "createTokenWithEthPair",
       args: [
-        name,
-        symbol,
-        description,
-        initialSupply,
-        pairAmount,
-        ethAmount,
-        address,
+        {
+          name,
+          symbol,
+          description,
+          url,
+          initialSupply,
+          pairAmount,
+          ethAmount,
+          creator: address,
+        },
       ],
       value: parseEther("0.01"),
     });

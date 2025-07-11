@@ -85,7 +85,7 @@ export default function CreateTokenPage() {
     setIsSubmitting(true);
 
     // Basic Validation
-    if (!tokenName || !tokenTicker || !description || !imageFile) {
+    if (!tokenName || !tokenTicker || !description) {
       toast({
         title: "⚠️ Missing Information",
         description: "Please fill out all required fields and upload an image.",
@@ -118,7 +118,8 @@ export default function CreateTokenPage() {
     await CreateToken(
       tokenName,
       tokenTicker,
-      description
+      description,
+      channelThumbnail
       // BigInt(1000000000000000000000000),
       // BigInt(500000000000000000000000),
       // BigInt(10000000000000000),
@@ -173,7 +174,7 @@ export default function CreateTokenPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Token Image */}
-            <div className="space-y-2 text-center">
+            {/* <div className="space-y-2 text-center">
               <Label
                 htmlFor="token-image"
                 className="text-lg font-semibold block mb-2"
@@ -202,7 +203,7 @@ export default function CreateTokenPage() {
               <p className="text-xs text-muted-foreground">
                 Recommended: Square image, PNG/JPG/GIF/WEBP, &lt;2MB.
               </p>
-            </div>
+            </div> */}
 
             {/* Token Name */}
             <div className="space-y-2">
