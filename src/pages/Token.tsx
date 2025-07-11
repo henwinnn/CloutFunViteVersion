@@ -236,10 +236,10 @@ export default function TokenDetailPage() {
       <header className="mb-8 p-6 rounded-xl bg-card/50 backdrop-blur-sm shadow-xl">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
           <Avatar className="h-20 w-20 border-4 border-primary">
-            {/* <AvatarImage
-              src={token.creatorAvatar || "/placeholder.svg"}
+            <AvatarImage
+              src={token.url || "/placeholder.svg"}
               alt={token.creatorName}
-            /> */}
+            />
             <AvatarFallback className="text-3xl">{token.name}</AvatarFallback>
           </Avatar>
           <div>
