@@ -26,6 +26,7 @@ const fetchTokenExplorer = async () => {
       token
       tokenPrice
       volume24h
+      url,
     }
   }
 }

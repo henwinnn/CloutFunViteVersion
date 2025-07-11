@@ -421,7 +421,7 @@ function EnhancedTokenCard({ token }: { token: any }) {
           <div className="flex items-center gap-3 mb-4">
             <Avatar className="h-12 w-12">
               <AvatarImage
-                src={token.creatorAvatar || "/placeholder.svg"}
+                src={token.url || "/placeholder.svg"}
                 alt={token.creatorName}
               />
               {/* <AvatarFallback>{token.tokenName.substring(0, 1)}</AvatarFallback> */}
@@ -509,7 +509,7 @@ function TokenListItem({ token }: { token: any }) {
             <div className="md:col-span-4 flex items-center gap-3">
               <Avatar className="h-10 w-10">
                 <AvatarImage
-                  src={token.creatorAvatar || "/placeholder.svg"}
+                  src={token.url || "/placeholder.svg"}
                   alt={token.creatorName}
                 />
                 <AvatarFallback>{token.name}</AvatarFallback>
