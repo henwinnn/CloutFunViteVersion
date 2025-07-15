@@ -288,13 +288,13 @@ export default function TokenDetailPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-card/50 backdrop-blur-sm shadow-xl">
+          {/* <Card className="bg-card/50 backdrop-blur-sm shadow-xl">
             <CardHeader>
               <CardTitle className="flex items-center">💬 Comments</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Comment Form */}
-              {/* <form onSubmit={handleCommentSubmit} className="space-y-3">
+              Comment Form
+              <form onSubmit={handleCommentSubmit} className="space-y-3">
                 <textarea
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
@@ -314,10 +314,9 @@ export default function TokenDetailPage() {
                     Post Comment
                   </Button>
                 </div>
-              </form> */}
-
-              {/* Comments List */}
-              {/* <div className="space-y-4 max-h-96 overflow-y-auto">
+              </form>
+              Comments List
+              <div className="space-y-4 max-h-96 overflow-y-auto">
                 {sortedComments.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <p>No comments yet. Be the first to share your thoughts!</p>
@@ -353,17 +352,16 @@ export default function TokenDetailPage() {
                     </div>
                   ))
                 )}
-              </div> */}
-
-              {/* Comment Stats */}
-              {/* <div className="pt-3 border-t border-border/50">
+              </div>
+              Comment Stats
+              <div className="pt-3 border-t border-border/50">
                 <p className="text-xs text-muted-foreground text-center">
                   {comments.length}{" "}
                   {comments.length === 1 ? "comment" : "comments"}
                 </p>
-              </div> */}
+              </div>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* Right Column: Stats, Buy/Sell, Bonding Curve */}
