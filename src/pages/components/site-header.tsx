@@ -24,6 +24,7 @@ import { cn } from "../..//lib/utils";
 import axios from "axios";
 import { useAccount } from "wagmi";
 import { useToast } from "../../hooks/use-toast";
+import { getProofData } from "../../util/youtube";
 
 export function SiteHeader() {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Mock login state
@@ -100,6 +101,8 @@ export function SiteHeader() {
     }
   }, [isLoadingGenerateProof]);
 
+  const proofData = getProofData();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center">
@@ -125,7 +128,7 @@ export function SiteHeader() {
             <span className="sr-only">Toggle Menu</span>
           </Button>
 
-          {address && (
+          {address && proofData && (
             <Link
               to="/create-token"
               className={cn(
@@ -137,9 +140,11 @@ export function SiteHeader() {
             </Link>
           )}
 
-          <div className="hidden sm:flex items-center space-x-2">
-            <ConnectButton />
-          </div>
+          {accessToken && (
+            <div className="hidden sm:flex items-center space-x-2">
+              <ConnectButton />
+            </div>
+          )}
           <div className="hidden sm:flex items-center space-x-2">
             {!accessToken ? (
               <Button
@@ -211,7 +216,7 @@ export function SiteHeader() {
                     generateProof();
                   }}
                 >
-                  Generate ZK
+                  Proof Account
                 </Button>
               </>
             )}
