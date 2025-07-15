@@ -1,7 +1,16 @@
 [
   {
     "inputs": [
-      { "internalType": "address", "name": "_uniswapRouter", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_uniswapRouter",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_graduationThreshold",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
