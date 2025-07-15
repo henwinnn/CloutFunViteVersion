@@ -30,6 +30,7 @@ import { useAccount } from "wagmi";
 import useTokenInfo from "../api/useTokenInfo";
 import { useGetBalance } from "../hooks/useGetTokenBalance";
 import { useTokenExplorerQuery } from "../hooks/useTokenExplorerQuery";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function TokenDetailPage() {
   const router = useNavigate();
@@ -236,10 +237,10 @@ export default function TokenDetailPage() {
       <header className="mb-8 p-6 rounded-xl bg-card/50 backdrop-blur-sm shadow-xl">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
           <Avatar className="h-20 w-20 border-4 border-primary">
-            {/* <AvatarImage
-              src={token.creatorAvatar || "/placeholder.svg"}
+            <AvatarImage
+              src={token.url || "/placeholder.svg"}
               alt={token.creatorName}
-            /> */}
+            />
             <AvatarFallback className="text-3xl">{token.name}</AvatarFallback>
           </Avatar>
           <div>
@@ -415,66 +416,72 @@ export default function TokenDetailPage() {
                 Token
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Buy/Sell Toggle */}
-              <div className="flex rounded-lg bg-muted p-1">
-                <button
-                  onClick={() => setTradeMode("buy")}
-                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    tradeMode === "buy"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Buy
-                </button>
-                <button
-                  onClick={() => setTradeMode("sell")}
-                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    tradeMode === "sell"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Sell
-                </button>
-              </div>
+            {!address ? (
+              <CardContent className="space-y-4 flex flex-col items-center">
+                <ConnectButton />
+              </CardContent>
+            ) : (
+              <CardContent className="space-y-4">
+                {/* Buy/Sell Toggle */}
+                <div className="flex rounded-lg bg-muted p-1">
+                  <button
+                    onClick={() => setTradeMode("buy")}
+                    className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                      tradeMode === "buy"
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Buy
+                  </button>
+                  <button
+                    onClick={() => setTradeMode("sell")}
+                    className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                      tradeMode === "sell"
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Sell
+                  </button>
+                </div>
 
-              {/* Amount input */}
-              <div className="flex items-center space-x-2">
-                <input
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="0.00"
-                  className="input flex-1 h-10 rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                />
-                <span className="font-semibold text-primary">
-                  {token.symbol}
-                </span>
-              </div>
+                {/* Amount input */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="number"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder="0.00"
+                    className="input flex-1 h-10 rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+                  <span className="font-semibold text-primary">
+                    {token.symbol}
+                  </span>
+                </div>
 
-              {/* Dynamic Button */}
-              {tradeMode === "buy" ? (
-                <Button
-                  ref={buyButtonRef}
-                  size="lg"
-                  className="w-full bg-green-600 hover:bg-green-700 text-white ripple-button"
-                  onClick={handleBuy}
-                >
-                  Buy {token.symbol}
-                </Button>
-              ) : (
-                <Button
-                  ref={sellButtonRef}
-                  size="lg"
-                  className="w-full bg-red-600 hover:bg-red-700 text-white ripple-button"
-                  onClick={handleSell}
-                >
-                  Sell {token.symbol}
-                </Button>
-              )}
-            </CardContent>
+                {/* Dynamic Button */}
+                {tradeMode === "buy" ? (
+                  <Button
+                    ref={buyButtonRef}
+                    size="lg"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white ripple-button"
+                    onClick={handleBuy}
+                  >
+                    Buy {token.symbol}
+                  </Button>
+                ) : (
+                  <Button
+                    ref={sellButtonRef}
+                    size="lg"
+                    className="w-full bg-red-600 hover:bg-red-700 text-white ripple-button"
+                    onClick={handleSell}
+                  >
+                    Sell {token.symbol}
+                  </Button>
+                )}
+              </CardContent>
+            )}
           </Card>
 
           {percentage !== undefined && (

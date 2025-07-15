@@ -49,7 +49,7 @@ export function InteractiveChart({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        di sini trading view
+        TRADING VIEW CHART
         {/* <ChartContainer
           config={{
             price: {

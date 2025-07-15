@@ -3,11 +3,16 @@
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import { getProofData } from "../util/youtube";
 
 import { cn } from "../lib/utils";
+import { useAccount } from "wagmi";
 // import { placeholderTokens } from "../lib/placeholder-data";
 
 export default function HomePage() {
+  const { address } = useAccount();
+  const proofData = getProofData();
+
   // const [filter, setFilter] = useState<"top" | "new" | "trending">("trending");
 
   // const filteredTokens = placeholderTokens.filter(
@@ -46,14 +51,16 @@ export default function HomePage() {
             launch, and grow your token community in minutes. 🚀✨
           </p>
           <div className="space-x-4">
-            <Link
-              to="/create-token"
-              className={cn(
-                "inline-flex items-center justify-center rounded-full px-8 py-3 text-lg font-semibold text-white shadow-lg transition-transform duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background bg-brand-gradient"
-              )}
-            >
-              <Sparkles className="mr-2 h-5 w-5" /> Create Your Token
-            </Link>
+            {address && proofData && (
+              <Link
+                to="/create-token"
+                className={cn(
+                  "inline-flex items-center justify-center rounded-full px-8 py-3 text-lg font-semibold text-white shadow-lg transition-transform duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background bg-brand-gradient"
+                )}
+              >
+                <Sparkles className="mr-2 h-5 w-5" /> Create Your Token
+              </Link>
+            )}
             <Link
               to="/explore"
               className={cn(
