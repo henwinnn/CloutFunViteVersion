@@ -60,8 +60,6 @@ export function SiteHeader() {
         }
       );
 
-      console.log("Proof generated:", res.data);
-
       localStorage.setItem("proofData", JSON.stringify(res.data));
 
       toast({
@@ -88,8 +86,6 @@ export function SiteHeader() {
   //   }
   //   console.log("gak masuk proof");
   // }, [accessToken]);
-
-  console.log("accessToken", accessToken);
 
   useEffect(() => {
     if (isLoadingGenerateProof) {

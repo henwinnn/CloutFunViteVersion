@@ -29,7 +29,6 @@ const fetchTokenDailyMetrics = async () => {
 
   const { data } = await res.json();
 
-  console.log("dataMetrics", data.tokenDailyMetricss.items);
   return { dataMetrics: data.tokenDailyMetricss.items };
 };
 
