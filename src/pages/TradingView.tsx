@@ -1,5 +1,5 @@
 import { useRef, useEffect } from "react";
-import { AreaSeries, CandlestickSeries, createChart } from "lightweight-charts";
+import { CandlestickSeries, createChart, ColorType } from "lightweight-charts";
 
 export default function TradingView() {
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -9,7 +9,7 @@ export default function TradingView() {
       const chartOptions = {
         layout: {
           textColor: "white",
-          background: { type: "solid", color: "#110e15" },
+          background: { type: ColorType.Solid, color: "#110e15" },
         },
         grid: {
           vertLines: {
