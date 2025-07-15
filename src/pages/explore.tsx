@@ -303,8 +303,6 @@ function TokenGrid({
 }) {
   const { data, isLoading, isError } = useTokenExplorerQuery();
 
-  console.log("data", data);
-
   if (isLoading) {
     return (
       <div className="text-center py-12">
