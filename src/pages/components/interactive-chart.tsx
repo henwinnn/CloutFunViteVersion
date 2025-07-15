@@ -16,22 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-// import {
-//   ChartContainer,
-//   ChartTooltip as ShadcnChartTooltip,
-//   ChartTooltipContent,
-// } from "./ui/chart"; // Assuming these are available
-
-// Sample data - replace with actual token price history
-// const chartData = [
-//   { name: "Jan", price: 65 },
-//   { name: "Feb", price: 59 },
-//   { name: "Mar", price: 80 },
-//   { name: "Apr", price: 81 },
-//   { name: "May", price: 56 },
-//   { name: "Jun", price: 55 },
-//   { name: "Jul", price: 70 },
-// ];
+import TradingView from "../TradingView";
 
 interface InteractiveChartProps {
   tokenName?: string;
@@ -49,7 +34,7 @@ export function InteractiveChart({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        TRADING VIEW CHART
+        <TradingView />
         {/* <ChartContainer
           config={{
             price: {

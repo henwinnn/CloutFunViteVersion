@@ -303,11 +303,7 @@ function TokenGrid({
 }) {
   const { data, isLoading, isError } = useTokenExplorerQuery();
 
-  const { data: tokenMetrics } = useTokenDailyMetricsQuery();
   console.log("data", data);
-  // const calculatedMetrics = calculatePrice24h(data, tokenMetrics?.dataMetrics);
-  console.log("dailyMetricsData depan", tokenMetrics?.dataMetrics);
-  // console.log("calculatedMetrics", calculatedMetrics);
 
   if (isLoading) {
     return (
