@@ -9,7 +9,7 @@ import { useOHLC } from "../hooks/useOHLC";
 
 export default function TradingView({ pair }: { pair?: `0x${string}` }) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
-  const { data, loading, error } = useOHLC(pair || "");
+  const { data, loading, error, refetch } = useOHLC(pair || "");
   const [timezone, setTimezone] = useState("Asia/Jakarta"); // Default ke WIB
 
   // Function untuk convert UTC timestamp ke timezone tertentu
