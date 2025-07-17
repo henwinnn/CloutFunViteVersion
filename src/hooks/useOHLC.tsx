@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-interface OHLCData {
+export interface OHLCData {
   open: number;
   high: number;
   low: number;
@@ -9,7 +9,7 @@ interface OHLCData {
   timestamp?: number;
 }
 
-interface UseOHLCReturn {
+export interface UseOHLCReturn {
   data: OHLCData[] | null;
   loading: boolean;
   error: string | null;
@@ -36,7 +36,7 @@ export const useOHLC = (pairAddress: string): UseOHLCReturn => {
 
     try {
       const response = await fetch(
-        `https://cloutponder.onrender.com/tradingview/${pairAddress}`
+        `https://cloutponder.onrender.com/tradingview/${pairAddress}?t=${Date.now()}`
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -80,7 +80,7 @@ export const useOHLC = (pairAddress: string): UseOHLCReturn => {
 
   const waitUntilDataIncreases = async (
     currentLength: number,
-    maxTries = 10
+    maxTries = 5
   ) => {
     let attempt = 0;
     while (attempt < maxTries) {

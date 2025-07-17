@@ -31,7 +31,7 @@ import useTokenInfo from "../api/useTokenInfo";
 import { useGetBalance } from "../hooks/useGetTokenBalance";
 import { useTokenExplorerQuery } from "../hooks/useTokenExplorerQuery";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useOHLC } from "../hooks/useOHLC";
+import { OHLCData, useOHLC } from "../hooks/useOHLC";
 
 export default function TokenDetailPage() {
   const router = useNavigate();
@@ -40,9 +40,14 @@ export default function TokenDetailPage() {
   const pair = params.id as string;
   const { isConnected, address } = useAccount();
   const { data: tokenData, refetch: refetchToken } = useTokenInfo(pair);
-  const { refetch: refetchOHLC, waitUntilDataIncreases } = useOHLC(pair);
+  const {
+    data: OHLCData,
+    refetch: refetchOHLC,
+    waitUntilDataIncreases,
+  } = useOHLC(pair);
   // Move the hook to component level
   const { data: apiData } = useTokenExplorerQuery();
+  const [newOHLC, setNewOHLC] = useState<OHLCData[] | null>(null);
 
   let token = apiData?.tokensMap?.find((token: any) => token.pair === pair);
   const balance = useGetBalance(token?.token, address);
@@ -80,6 +85,15 @@ export default function TokenDetailPage() {
   //     </div>
   //   );
   // }
+
+  useEffect(() => {
+    const init = async () => {
+      const data = await refetchOHLC();
+      setNewOHLC(data);
+    };
+
+    init();
+  }, []);
 
   // Show not found state
   if (!token) {
@@ -159,6 +173,8 @@ export default function TokenDetailPage() {
       await refetchToken();
       await new Promise((resolve) => setTimeout(resolve, 2000)); // wait 2s
       const currentLength = (await refetchOHLC())?.length ?? 0;
+      const newOHLC = await refetchOHLC();
+      setNewOHLC(newOHLC);
       await waitUntilDataIncreases(currentLength);
     }
     toast({
@@ -181,6 +197,8 @@ export default function TokenDetailPage() {
       await refetchToken();
       await new Promise((resolve) => setTimeout(resolve, 2000)); // wait 2s
       const currentLength = (await refetchOHLC())?.length ?? 0;
+      const newOHLC = await refetchOHLC();
+      setNewOHLC(newOHLC);
       await waitUntilDataIncreases(currentLength);
     }
 
@@ -283,7 +301,11 @@ export default function TokenDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Chart & Info */}
         <div className="lg:col-span-2 space-y-8">
-          <InteractiveChart tokenName={token.name} pair={token.pair} />
+          <InteractiveChart
+            newOHLC={newOHLC}
+            tokenName={token.name}
+            pair={token.pair}
+          />
 
           <Card className="bg-card/50 backdrop-blur-sm shadow-xl">
             <CardHeader>
