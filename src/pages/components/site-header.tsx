@@ -77,15 +77,18 @@ export function SiteHeader() {
     setIsLoadingGenerateProof(false);
   };
 
+  // Fetch proof data from local storage or API
+  const proofData = getProofData();
+
   useEffect(() => {
-    if (accessToken) {
+    if (accessToken && !proofData) {
       const timeout = setTimeout(() => {
         generateProof();
       }, 100); // 5000ms = 5 seconds
 
       return () => clearTimeout(timeout);
     }
-  }, [accessToken]);
+  }, [accessToken, proofData]);
 
   useEffect(() => {
     if (isLoadingGenerateProof) {
@@ -96,8 +99,6 @@ export function SiteHeader() {
       });
     }
   }, [isLoadingGenerateProof]);
-
-  const proofData = getProofData();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
