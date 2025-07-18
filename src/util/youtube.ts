@@ -1,4 +1,5 @@
 export function getProofData() {
+  localStorage.clear();
   // To get the data back from localStorage generate ZK
   const storedProofData = localStorage.getItem("proofData");
   const parsedProofData = storedProofData ? JSON.parse(storedProofData) : null;

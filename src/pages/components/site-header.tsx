@@ -77,15 +77,15 @@ export function SiteHeader() {
     setIsLoadingGenerateProof(false);
   };
 
-  // useEffect(() => {
-  //   if (accessToken && oneGenerateProof) {
-  //     generateProof();
+  useEffect(() => {
+    if (accessToken) {
+      const timeout = setTimeout(() => {
+        generateProof();
+      }, 3000); // 5000ms = 5 seconds
 
-  //     console.log("masuk proof");
-  //     setOneGenerateProof(false);
-  //   }
-  //   console.log("gak masuk proof");
-  // }, [accessToken]);
+      return () => clearTimeout(timeout);
+    }
+  }, [accessToken]);
 
   useEffect(() => {
     if (isLoadingGenerateProof) {
@@ -205,15 +205,15 @@ export function SiteHeader() {
                   </svg>
                   Logout Gmail
                 </Button>
-                <Button
+                {/* <Button
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    generateProof();
+                    // generateProof();
                   }}
                 >
                   Proof Account
-                </Button>
+                </Button> */}
               </>
             )}
           </div>
