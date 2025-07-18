@@ -81,7 +81,7 @@ export function SiteHeader() {
     if (accessToken) {
       const timeout = setTimeout(() => {
         generateProof();
-      }, 3000); // 5000ms = 5 seconds
+      }, 100); // 5000ms = 5 seconds
 
       return () => clearTimeout(timeout);
     }
@@ -182,6 +182,7 @@ export function SiteHeader() {
                     // handleSignIn()
                     logout();
                     setIsMobileMenuOpen(false);
+                    localStorage.clear();
                   }}
                   className="w-full my-1 bg-white hover:bg-black text-gray-900 border border-gray-300 shadow-sm transition-all duration-200 hover:shadow-md"
                 >
