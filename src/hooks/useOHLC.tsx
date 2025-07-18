@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-interface OHLCData {
+export interface OHLCData {
   open: number;
   high: number;
   low: number;
@@ -9,11 +9,15 @@ interface OHLCData {
   timestamp?: number;
 }
 
-interface UseOHLCReturn {
+export interface UseOHLCReturn {
   data: OHLCData[] | null;
   loading: boolean;
   error: string | null;
-  refetch: () => void;
+  refetch: () => Promise<OHLCData[] | null>;
+  waitUntilDataIncreases: (
+    currentLength: number,
+    maxTries?: number
+  ) => Promise<void>;
 }
 
 export const useOHLC = (pairAddress: string): UseOHLCReturn => {
@@ -24,7 +28,7 @@ export const useOHLC = (pairAddress: string): UseOHLCReturn => {
   const fetchOHLCData = async () => {
     if (!pairAddress) {
       setError("Pair address is required");
-      return;
+      return null;
     }
 
     setLoading(true);
@@ -32,16 +36,14 @@ export const useOHLC = (pairAddress: string): UseOHLCReturn => {
 
     try {
       const response = await fetch(
-        `https://cloutponder.onrender.com/tradingview/${pairAddress}`
+        `https://cloutponder.onrender.com/tradingview/${pairAddress}?t=${Date.now()}`
       );
-
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
 
-      // // Option 1: Transform and store the data
       const transformedData: OHLCData[] = result.data.map((item: any) => ({
         open: item.open,
         high: item.high,
@@ -50,7 +52,9 @@ export const useOHLC = (pairAddress: string): UseOHLCReturn => {
         time: item.time,
       }));
 
-      setData(transformedData);
+      setData([...transformedData]);
+
+      return transformedData; // ✅ return it
     } catch (err) {
       setError(
         err instanceof Error
@@ -58,6 +62,7 @@ export const useOHLC = (pairAddress: string): UseOHLCReturn => {
           : "An error occurred while fetching OHLC data"
       );
       setData([]);
+      return null;
     } finally {
       setLoading(false);
     }
@@ -69,8 +74,25 @@ export const useOHLC = (pairAddress: string): UseOHLCReturn => {
     }
   }, [pairAddress]);
 
-  const refetch = () => {
-    fetchOHLCData();
+  const refetch = async (): Promise<OHLCData[] | null> => {
+    return await fetchOHLCData();
+  };
+
+  const waitUntilDataIncreases = async (
+    currentLength: number,
+    maxTries = 5
+  ) => {
+    let attempt = 0;
+    while (attempt < maxTries) {
+      const updatedData = await refetch(); // ✅ get new data
+      if (updatedData && updatedData.length > currentLength) {
+        console.log("🎯 New OHLC data available");
+        break;
+      }
+      console.log(`⏳ Waiting for new OHLC data... attempt ${attempt + 1}`);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      attempt++;
+    }
   };
 
   return {
@@ -78,5 +100,6 @@ export const useOHLC = (pairAddress: string): UseOHLCReturn => {
     loading,
     error,
     refetch,
+    waitUntilDataIncreases,
   };
 };

@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { useToast } from "./components/ui/use-toast";
 import type React from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 // import useTokenExplorer from "../api/useTokenExplorer";
 import { useGetPercentage } from "../hooks/useGetPercentage";
 import {
@@ -31,6 +31,7 @@ import useTokenInfo from "../api/useTokenInfo";
 import { useGetBalance } from "../hooks/useGetTokenBalance";
 import { useTokenExplorerQuery } from "../hooks/useTokenExplorerQuery";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { OHLCData, useOHLC } from "../hooks/useOHLC";
 
 export default function TokenDetailPage() {
   const router = useNavigate();
@@ -38,10 +39,15 @@ export default function TokenDetailPage() {
   const { toast } = useToast();
   const pair = params.id as string;
   const { isConnected, address } = useAccount();
-  const tokenInfo = useTokenInfo(pair);
-  const tokenData = tokenInfo?.data;
+  const { data: tokenData, refetch: refetchToken } = useTokenInfo(pair);
+  const {
+    data: OHLCData,
+    refetch: refetchOHLC,
+    waitUntilDataIncreases,
+  } = useOHLC(pair);
   // Move the hook to component level
   const { data: apiData } = useTokenExplorerQuery();
+  const [newOHLC, setNewOHLC] = useState<OHLCData[] | null>(null);
 
   let token = apiData?.tokensMap?.find((token: any) => token.pair === pair);
   const balance = useGetBalance(token?.token, address);
@@ -56,7 +62,7 @@ export default function TokenDetailPage() {
   const sellButtonRef = useRef<HTMLButtonElement>(null);
   const [amount, setAmount] = useState("");
   const [tradeMode, setTradeMode] = useState<"buy" | "sell">("buy");
-
+  // const price = 3100;
   // Show loading state
   // if (loading) {
   //   return (
@@ -79,6 +85,15 @@ export default function TokenDetailPage() {
   //     </div>
   //   );
   // }
+
+  useEffect(() => {
+    const init = async () => {
+      const data = await refetchOHLC();
+      setNewOHLC(data);
+    };
+
+    init();
+  }, []);
 
   // Show not found state
   if (!token) {
@@ -149,12 +164,18 @@ export default function TokenDetailPage() {
     );
   }
 
-  const handleBuy = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleBuy = async (event: React.MouseEvent<HTMLButtonElement>) => {
     handleRippleEffect(event);
     // Simulate buy action
     const isInputValid = !Number.isNaN(Number(amount));
     if (isInputValid && isConnected) {
-      Buy(token.pair, amount);
+      await Buy(token.pair, amount);
+      await refetchToken();
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // wait 2s
+      const currentLength = (await refetchOHLC())?.length ?? 0;
+      const newOHLC = await refetchOHLC();
+      setNewOHLC(newOHLC);
+      await waitUntilDataIncreases(currentLength);
     }
     toast({
       title: "🚀 Purchase Successful!",
@@ -164,7 +185,7 @@ export default function TokenDetailPage() {
     // Potentially trigger confetti here
   };
 
-  const handleSell = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSell = async (event: React.MouseEvent<HTMLButtonElement>) => {
     handleRippleEffect(event);
     const isBalanceEnough = Number(amount) <= balance;
 
@@ -172,7 +193,13 @@ export default function TokenDetailPage() {
       if (Number(amount) > allowance) {
         Approve(token?.token, token.pair, amount);
       }
-      Sell(token.pair, amount);
+      await Sell(token.pair, amount);
+      await refetchToken();
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // wait 2s
+      const currentLength = (await refetchOHLC())?.length ?? 0;
+      const newOHLC = await refetchOHLC();
+      setNewOHLC(newOHLC);
+      await waitUntilDataIncreases(currentLength);
     }
 
     // Simulate sell action
@@ -274,7 +301,11 @@ export default function TokenDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Chart & Info */}
         <div className="lg:col-span-2 space-y-8">
-          <InteractiveChart tokenName={token.name} pair={token.pair} />
+          <InteractiveChart
+            newOHLC={newOHLC}
+            tokenName={token.name}
+            pair={token.pair}
+          />
 
           <Card className="bg-card/50 backdrop-blur-sm shadow-xl">
             <CardHeader>
@@ -377,7 +408,7 @@ export default function TokenDetailPage() {
                 <span className="text-muted-foreground">Price (ETH)</span>
                 <span className="font-semibold text-lg">
                   {/* ${Number(tokenData?.pricePerToken)/1e18} */}
-                  {`$${(Number(tokenData?.pricePerToken) / 1e18).toFixed(18)}`}
+                  {`$${(Number(tokenData?.pricePerToken) / 1e18).toFixed(8)}`}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -395,7 +426,7 @@ export default function TokenDetailPage() {
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Market Cap</span>
                 <span className="font-semibold">
-                  ${Number(tokenData?.marketCap) / 1e18}
+                  ${(Number(tokenData?.marketCap) / 1e18).toFixed(8)}
                 </span>
               </div>
               <div className="flex justify-between items-center">

@@ -77,15 +77,18 @@ export function SiteHeader() {
     setIsLoadingGenerateProof(false);
   };
 
-  // useEffect(() => {
-  //   if (accessToken && oneGenerateProof) {
-  //     generateProof();
+  // Fetch proof data from local storage or API
+  const proofData = getProofData();
 
-  //     console.log("masuk proof");
-  //     setOneGenerateProof(false);
-  //   }
-  //   console.log("gak masuk proof");
-  // }, [accessToken]);
+  useEffect(() => {
+    if (accessToken && !proofData) {
+      const timeout = setTimeout(() => {
+        generateProof();
+      }, 100); // 5000ms = 5 seconds
+
+      return () => clearTimeout(timeout);
+    }
+  }, [accessToken, proofData]);
 
   useEffect(() => {
     if (isLoadingGenerateProof) {
@@ -96,8 +99,6 @@ export function SiteHeader() {
       });
     }
   }, [isLoadingGenerateProof]);
-
-  const proofData = getProofData();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -182,6 +183,7 @@ export function SiteHeader() {
                     // handleSignIn()
                     logout();
                     setIsMobileMenuOpen(false);
+                    localStorage.clear();
                   }}
                   className="w-full my-1 bg-white hover:bg-black text-gray-900 border border-gray-300 shadow-sm transition-all duration-200 hover:shadow-md"
                 >
@@ -205,15 +207,15 @@ export function SiteHeader() {
                   </svg>
                   Logout Gmail
                 </Button>
-                <Button
+                {/* <Button
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    generateProof();
+                    // generateProof();
                   }}
                 >
                   Proof Account
-                </Button>
+                </Button> */}
               </>
             )}
           </div>

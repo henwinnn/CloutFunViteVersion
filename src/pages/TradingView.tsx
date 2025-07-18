@@ -5,13 +5,18 @@ import {
   ColorType,
   UTCTimestamp,
 } from "lightweight-charts";
-import { useOHLC } from "../hooks/useOHLC";
+import { OHLCData, useOHLC } from "../hooks/useOHLC";
 
-export default function TradingView({ pair }: { pair?: `0x${string}` }) {
+export default function TradingView({
+  pair,
+  newOHLC,
+}: {
+  pair?: `0x${string}`;
+  newOHLC: OHLCData[] | null;
+}) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
-  const { data, loading, error } = useOHLC(pair || "");
+  const { loading, error, refetch } = useOHLC(pair || "");
   const [timezone, setTimezone] = useState("Asia/Jakarta"); // Default ke WIB
-
   // Function untuk convert UTC timestamp ke timezone tertentu
   const convertToTimezone = (utcTimestamp: number, targetTimezone: string) => {
     if (targetTimezone === "UTC") return utcTimestamp;
@@ -66,12 +71,17 @@ export default function TradingView({ pair }: { pair?: `0x${string}` }) {
   }, [timezone]);
 
   useEffect(() => {
-    if (!chartContainerRef.current || loading || !data || data.length === 0) {
+    if (
+      !chartContainerRef.current ||
+      loading ||
+      !newOHLC ||
+      newOHLC.length === 0
+    ) {
       return;
     }
 
     // Create continuous artificial candlesticks with timezone conversion
-    const chartData = data
+    const chartData = newOHLC
       .filter((item: any) => {
         return (
           item.time &&
@@ -84,7 +94,9 @@ export default function TradingView({ pair }: { pair?: `0x${string}` }) {
       .map((item: any, index: number) => {
         const currentPrice = parseFloat(item.close);
         const prevPrice =
-          index > 0 ? parseFloat(String(data[index - 1].close)) : currentPrice;
+          index > 0
+            ? parseFloat(String(newOHLC[index - 1].close))
+            : currentPrice;
 
         // Convert UTC time to selected timezone
         const localTime = convertToTimezone(item.time, timezone);
@@ -209,7 +221,7 @@ export default function TradingView({ pair }: { pair?: `0x${string}` }) {
     return () => {
       chart.remove();
     };
-  }, [data, loading, timezone]); // Add timezone as dependency
+  }, [newOHLC, loading, timezone]); // Add timezone as dependency
 
   if (loading) {
     return (
@@ -227,7 +239,7 @@ export default function TradingView({ pair }: { pair?: `0x${string}` }) {
     );
   }
 
-  if (!data || data.length === 0) {
+  if (!newOHLC || newOHLC.length === 0) {
     return (
       <div className="flex items-center justify-center h-96">
         No chart data available
